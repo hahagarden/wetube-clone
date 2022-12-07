@@ -7,6 +7,9 @@ const PORT = 4000;
 
 const app = express();
 
+app.set("view engine", "pug");
+app.set("views", process.cwd() + "/src/views");
+
 const logger = (req, res, next) => {
   console.log(`${req.method}: ${req.url}`);
   next();
