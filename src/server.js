@@ -15,6 +15,7 @@ const logger = (req, res, next) => {
   next();
 }; //middleware
 app.use(logger);
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/", globalRouter);
 app.use("/videos", videoRouter);
