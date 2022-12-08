@@ -1,3 +1,4 @@
+import "./db";
 import express from "express";
 import globalRouter from "./routers/globalRouter";
 import userRouter from "./routers/userRouter";
