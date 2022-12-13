@@ -1,62 +1,39 @@
-export const videos = [
-  {
-    title: "First Video",
-    rating: 5,
-    comments: 2,
-    createdAt: "2 minutes ago",
-    views: 59,
-    id: 1,
-  },
-  {
-    title: "Second Video",
-    rating: 5,
-    comments: 2,
-    createdAt: "1 minutes ago",
-    views: 30,
-    id: 2,
-  },
-  {
-    title: "Third Video",
-    rating: 3,
-    comments: 1,
-    createdAt: "1 minutes ago",
-    views: 1,
-    id: 3,
-  },
-];
+import Video from "../models/Video";
 
-export const trending = (req, res) =>
-  res.render("home", { pageTitle: "Home", videos });
+export const home = async (req, res) => {
+  const videos = await Video.find({});
+  console.log(videos);
+  return res.render("home", { pageTitle: "Home", videos });
+};
 export const watch = (req, res) => {
   const { id } = req.params;
-  const video = videos[id - 1];
-  return res.render("watch", { pageTitle: `Watching: ${video.title}`, video });
+  return res.render("watch", { pageTitle: `Watching` });
 };
 export const getEdit = (req, res) => {
   const { id } = req.params;
-  const video = videos[id - 1];
-  return res.render("edit", { pageTitle: `Editing: ${video.title}`, video });
+  return res.render("edit", { pageTitle: `Editing` });
 };
 export const postEdit = (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
-  videos[id - 1].title = title;
   return res.redirect(`/videos/${id}`);
 };
 export const search = (req, res) => res.send("Search");
 export const getUpload = (req, res) =>
   res.render("upload", { pageTitle: "Uploading" });
-export const postUpload = (req, res) => {
-  const { title } = req.body;
-  const newVideo = {
+export const postUpload = async (req, res) => {
+  const { title, description, hashtags } = req.body;
+  const video = new Video({
     title,
-    rating: 0,
-    comments: 0,
-    createdAt: "just now",
-    views: 0,
-    id: videos.length + 1,
-  };
-  videos.push(newVideo);
+    description,
+    createdAt: Date.now(),
+    hashtags: hashtags.split(",").map((word) => `#${word}`),
+    meta: {
+      views: 0,
+      rating: 0,
+    },
+  });
+  await video.save(); //db에 저장함
   return res.redirect("/");
 };
 export const deleteVideo = (req, res) => res.send("Delete Video");
