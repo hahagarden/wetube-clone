@@ -25,9 +25,7 @@ export const postEdit = async (req, res) => {
   await Video.findByIdAndUpdate(id, {
     title,
     description,
-    hashtags: hashtags
-      .split(",")
-      .map((word) => (word.startsWith("#") ? word : `${word}`)),
+    hashtags: Video.formatHashtags(hashtags),
   });
   return res.redirect(`/videos/${id}`);
 };
@@ -39,7 +37,7 @@ export const postUpload = async (req, res) => {
   const video = new Video({
     title,
     description,
-    hashtags,
+    hashtags: Video.formatHashtags(hashtags),
   });
   await video.save(); //db에 저장함
   return res.redirect("/");

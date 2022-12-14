@@ -7,3 +7,6 @@ mixin video(video)
             li comments: #{video.comments}.
             li Posted #{video.createdAt}.
             li #{video.views} views.
+            ul
+                each hashtag in video.hashtags
+                    li=hashtag 
