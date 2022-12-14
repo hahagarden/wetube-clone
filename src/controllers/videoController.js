@@ -29,7 +29,18 @@ export const postEdit = async (req, res) => {
   });
   return res.redirect(`/videos/${id}`);
 };
-export const search = (req, res) => res.send("Search");
+export const search = async (req, res) => {
+  const { keyword } = req.query;
+  let videos = [];
+  if (keyword) {
+    videos = await Video.find({
+      title: {
+        $regex: new RegExp(keyword, "i"),
+      },
+    });
+  }
+  return res.render("search", { pageTitle: "Searching", videos });
+};
 export const getUpload = (req, res) =>
   res.render("upload", { pageTitle: "Uploading" });
 export const postUpload = async (req, res) => {
