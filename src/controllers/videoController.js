@@ -39,12 +39,7 @@ export const postUpload = async (req, res) => {
   const video = new Video({
     title,
     description,
-    createdAt: Date.now(),
-    hashtags: hashtags.split(",").map((word) => `#${word}`),
-    meta: {
-      views: 0,
-      rating: 0,
-    },
+    hashtags,
   });
   await video.save(); //db에 저장함
   return res.redirect("/");
