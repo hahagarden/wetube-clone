@@ -1,5 +1,5 @@
 import express from "express";
-import globalRouter from "./routers/globalRouter";
+import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
 
@@ -15,7 +15,7 @@ const logger = (req, res, next) => {
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/", globalRouter);
+app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
 
