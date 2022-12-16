@@ -2,6 +2,8 @@ extends base.pug
 
 block content 
     h4 Upload new video
+    if errorMessage 
+        span=errorMessage
     form(method="POST")
         input(placeholder="title" name="title" required)
         input(placeholder="description" name="description" required)

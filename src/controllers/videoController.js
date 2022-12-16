@@ -14,14 +14,16 @@ export const watch = async (req, res) => {
 export const getEdit = async (req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id);
-  if (!video) return res.render("404", { pageTitle: "Video not found." });
+  if (!video)
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   return res.render("edit", { pageTitle: `Editing`, video });
 };
 export const postEdit = async (req, res) => {
   const { id } = req.params;
   const { title, description, hashtags } = req.body;
   const video = await Video.exists({ _id: id });
-  if (!video) return res.render("404", { pageTitle: "Video not found." });
+  if (!video)
+    return res.status(404).render("404", { pageTitle: "Video not found." });
   await Video.findByIdAndUpdate(id, {
     title,
     description,
@@ -45,12 +47,18 @@ export const getUpload = (req, res) =>
   res.render("upload", { pageTitle: "Uploading" });
 export const postUpload = async (req, res) => {
   const { title, description, hashtags } = req.body;
-  const video = new Video({
-    title,
-    description,
-    hashtags: Video.formatHashtags(hashtags),
-  });
-  await video.save(); //db에 저장함
-  return res.redirect("/");
+  try {
+    await Video.create({
+      title,
+      description,
+      hashtags: Video.formatHashtags(hashtags),
+    });
+    return res.redirect("/");
+  } catch (error) {
+    return res.render("upload", {
+      pageTitle: "Uploading",
+      errorMessage: error.message,
+    });
+  }
 };
 export const deleteVideo = (req, res) => res.send("Delete Video");

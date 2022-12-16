@@ -5,14 +5,20 @@ export const getJoin = (req, res) => {
 };
 export const postJoin = async (req, res) => {
   const { name, email, username, password, location } = req.body;
-  await User.create({
-    name,
-    email,
-    username,
-    password,
-    location,
-  });
-  res.redirect("/login");
+  try {
+    await User.create({
+      name,
+      email,
+      username,
+      password,
+      location,
+    });
+    res.redirect("/login");
+  } catch (error) {
+    return res
+      .status(400)
+      .render("join", { pageTitle: "Join", errorMessage: error.message });
+  }
 };
 export const edit = (req, res) => res.send("Edit User");
 export const remove = (req, res) => res.send("Remove User");
