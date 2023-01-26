@@ -114,8 +114,7 @@ export const postLogin = async (req, res) => {
       errorMessage: "An account with this username does not exists.",
     });
   }
-  const socialOnlyUser = await User.find({ username, socialOnly: false });
-  if (socialOnlyUser) {
+  if (user.socialOnly === true) {
     return res.status(400).render("login", {
       pageTitle: "Login",
       errorMessage: "An account with this username is joined by Social Login.",
