@@ -58,6 +58,44 @@ export const finishGithubLogin = async (req, res) => {
       })
     ).json();
     console.log(userData);
+    const emailData = await (
+      await fetch("https://api.github.com/user/emails", {
+        method: "GET",
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      })
+    ).json();
+    const emailObj = emailData.find(
+      (email) => email.primary === true && email.verified === true
+    );
+    if (!emailObj) {
+      return res.redirect("/login");
+    }
+    const existingUser = await User.findOne({ email: emailObj.email });
+    if (existingUser) {
+      console.log(existingUser);
+      req.session.loggedIn = true;
+      req.session.user = existingUser;
+      console.log("login success! welcome.");
+      return res.redirect("/");
+    } else {
+      const existingUsername = await User.findOne({ username: userData.login });
+      const user = await User.create({
+        name: userData.name,
+        email: emailObj.email,
+        username: existingUsername
+          ? userData.login + Math.ceil(Math.random() * 9)
+          : userData.login,
+        password: "",
+        socialOnly: true,
+        location: userData.location,
+      });
+      req.session.loggedIn = true;
+      req.session.user = user;
+      console.log("login success! welcome.");
+      return res.redirect("/");
+    }
   } else {
     return res.redirect("/login");
   }
@@ -74,6 +112,13 @@ export const postLogin = async (req, res) => {
     return res.status(400).render("login", {
       pageTitle: "Login",
       errorMessage: "An account with this username does not exists.",
+    });
+  }
+  const socialOnlyUser = await User.find({ username, socialOnly: false });
+  if (socialOnlyUser) {
+    return res.status(400).render("login", {
+      pageTitle: "Login",
+      errorMessage: "An account with this username is joined by Social Login.",
     });
   }
   const ok = await bcrypt.compare(password, user.password);
