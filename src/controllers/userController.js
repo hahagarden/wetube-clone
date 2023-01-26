@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 export const getJoin = (req, res) => {
   return res.render("join", { pageTitle: "Join" });
 };
+
 export const postJoin = async (req, res) => {
   const { name, email, username, password, location } = req.body;
   try {
@@ -20,6 +21,37 @@ export const postJoin = async (req, res) => {
       .status(400)
       .render("join", { pageTitle: "Join", errorMessage: error.message });
   }
+};
+
+export const getLogin = (req, res) =>
+  res.render("login", { pageTitle: "Login" });
+
+export const postLogin = async (req, res) => {
+  const { username, password } = req.body;
+  const user = await User.findOne({ username });
+  if (!user) {
+    return res.status(400).render("login", {
+      pageTitle: "Login",
+      errorMessage: "An account with this username does not exists.",
+    });
+  }
+  if (user.socialOnly === true) {
+    return res.status(400).render("login", {
+      pageTitle: "Login",
+      errorMessage: "An account with this username is joined by Social Login.",
+    });
+  }
+  const ok = await bcrypt.compare(password, user.password);
+  if (!ok) {
+    return res.status(400).render("login", {
+      pageTitle: "Login",
+      errorMessage: "Wrong password.",
+    });
+  }
+  req.session.loggedIn = true;
+  req.session.user = user;
+  console.log("login success! welcome.");
+  return res.redirect("/");
 };
 
 export const startGithubLogin = (req, res) => {
@@ -72,16 +104,10 @@ export const finishGithubLogin = async (req, res) => {
     if (!emailObj) {
       return res.redirect("/login");
     }
-    const existingUser = await User.findOne({ email: emailObj.email });
-    if (existingUser) {
-      console.log(existingUser);
-      req.session.loggedIn = true;
-      req.session.user = existingUser;
-      console.log("login success! welcome.");
-      return res.redirect("/");
-    } else {
+    let user = await User.findOne({ email: emailObj.email });
+    if (!user) {
       const existingUsername = await User.findOne({ username: userData.login });
-      const user = await User.create({
+      user = await User.create({
         name: userData.name,
         email: emailObj.email,
         username: existingUsername
@@ -91,49 +117,21 @@ export const finishGithubLogin = async (req, res) => {
         socialOnly: true,
         location: userData.location,
       });
-      req.session.loggedIn = true;
-      req.session.user = user;
-      console.log("login success! welcome.");
-      return res.redirect("/");
     }
+    req.session.loggedIn = true;
+    req.session.user = user;
+    console.log("login success! welcome.");
+    return res.redirect("/");
   } else {
     return res.redirect("/login");
   }
 };
 
 export const edit = (req, res) => res.send("Edit User");
-export const remove = (req, res) => res.send("Remove User");
-export const getLogin = (req, res) =>
-  res.render("login", { pageTitle: "Login" });
-export const postLogin = async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username });
-  if (!user) {
-    return res.status(400).render("login", {
-      pageTitle: "Login",
-      errorMessage: "An account with this username does not exists.",
-    });
-  }
-  if (user.socialOnly === true) {
-    return res.status(400).render("login", {
-      pageTitle: "Login",
-      errorMessage: "An account with this username is joined by Social Login.",
-    });
-  }
-  const ok = await bcrypt.compare(password, user.password);
-  if (!ok) {
-    return res.status(400).render("login", {
-      pageTitle: "Login",
-      errorMessage: "Wrong password.",
-    });
-  }
-  req.session.loggedIn = true;
-  req.session.user = user;
-  console.log("login success! welcome.");
-  return res.redirect("/");
-};
+
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
 };
+
 export const see = (req, res) => res.send("Watch");
