@@ -2,6 +2,7 @@ doctype html
 html(lang="ko")
     head
         title #{pageTitle} | #{siteName}
+        link(rel="stylesheet" href="https://unpkg.com/mvp.css@1.12/mvp.css")
     body
         header
             h1=pageTitle
@@ -23,7 +24,6 @@ html(lang="ko")
                         a(href="/videos/upload") Upload Video
                     li 
                         a(href="/search") Search
-                    
         main
             block content 
         include partials/footer.pug
