@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const videoSchema = new mongoose.Schema({
   title: String,
+  fileUrl: { type: String, required: true },
   description: String,
   createdAt: { type: Date, default: Date.now },
   hashtags: [{ type: String }],
@@ -14,7 +15,9 @@ const videoSchema = new mongoose.Schema({
 videoSchema.static("formatHashtags", function (hashtags) {
   return hashtags
     .split(",")
-    .map((word) => (word.startsWith("#") ? word : `#${word.trim()}`));
+    .map((word) =>
+      word.trim().startsWith("#") ? word.trim() : `#${word.trim()}`
+    );
 });
 
 const Video = mongoose.model("Video", videoSchema);
