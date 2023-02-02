@@ -1,7 +1,6 @@
 extends base.pug
 
 block content 
-    h4 Upload new video
     if errorMessage 
         span=errorMessage
     form(method="POST" enctype="multipart/form-data")

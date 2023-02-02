@@ -210,7 +210,14 @@ export const logout = (req, res) => {
 export const see = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await User.findById(id).populate("videos");
+    const user = await User.findById(id).populate({
+      path: "videos",
+      populate: {
+        path: "owner",
+        model: "User",
+      },
+    });
+    console.log(user);
     return res.render("profile", { pageTitle: user.username, user });
   } catch (error) {
     return res.status(404).render("404", { pageTitle: "User not found." });

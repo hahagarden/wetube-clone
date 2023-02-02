@@ -1,12 +1,8 @@
 mixin video(video)
-    div
-        a(href="/videos/"+video.id)
-            h4 #{video.title}
-        ul
-            li #{video.rating}/5.
-            li comments: #{video.comments}.
-            li Posted #{video.createdAt}.
-            li #{video.views} views.
-            ul
-                each hashtag in video.hashtags
-                    li=hashtag 
+    a(href="/videos/"+video.id).video-mixin
+        div.video-mixin__thumb
+        div.video-mixin__data
+            span.video-mixin__title=video.title
+            div.video-mixin__meta
+                span #{video.owner.name} •
+                span #{video.meta.views}회
