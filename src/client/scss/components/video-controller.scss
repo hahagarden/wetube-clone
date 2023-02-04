@@ -1,0 +1,45 @@
+div#videoContainer {
+  position: relative;
+}
+
+div#videoController {
+  * {
+    &:not(#timenumber, span) {
+      cursor: pointer;
+    }
+  }
+  background-color: rgba($color: $black, $alpha: 0.5);
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+  width: 90%;
+  height: 40px;
+  display: grid;
+  visibility: hidden;
+  opacity: 0;
+  padding: 0 15px;
+  border-radius: 10px;
+  grid-template-columns: 1fr 1fr 5fr 5fr 30fr 1fr;
+  column-gap: 10px;
+  justify-content: center;
+  align-items: center;
+  color: $text;
+  div {
+    width: 100%;
+    text-align: center;
+  }
+  input {
+    width: 100%;
+  }
+  button {
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    color: $text;
+  }
+  &.showing {
+    visibility: visible;
+    opacity: 1;
+  }
+  transition: all 0.3s ease-in-out;
+}

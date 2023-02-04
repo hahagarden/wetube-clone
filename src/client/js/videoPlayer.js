@@ -1,12 +1,15 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
+const playIcon = playBtn.querySelector("i");
 const muteBtn = document.getElementById("mute");
+const muteIcon = muteBtn.querySelector("i");
 const time = document.getElementById("time");
 const volumeRange = document.getElementById("volume");
 const currentTime = document.getElementById("currentTime");
 const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
 const fullscreenBtn = document.getElementById("fullscreen");
+const fullscreenIcon = fullscreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 const videoController = document.getElementById("videoController");
 
@@ -22,7 +25,7 @@ const handlePlayClick = () => {
   } else {
     video.pause();
   }
-  playBtn.innerText = video.paused ? "Play" : "Pause";
+  playIcon.classList = video.paused ? "fa-solid fa-play" : "fa-solid fa-pause";
 };
 const handleMuteClick = () => {
   if (video.muted) {
@@ -30,7 +33,9 @@ const handleMuteClick = () => {
   } else {
     video.muted = true;
   }
-  muteBtn.innerText = video.muted ? "Unmute" : "Mute";
+  muteIcon.classList = video.muted
+    ? "fa-solid fa-volume-high"
+    : "fa-solid fa-volume-xmark";
   volumeRange.value = video.muted ? 0 : userVolume;
 };
 const handleVolumeChange = (event) => {
@@ -68,23 +73,18 @@ const handleFullscreenClick = () => {
   const fullscreen = document.fullscreenElement;
   if (fullscreen) {
     document.exitFullscreen();
-    fullscreenBtn.innerText = "Enter Full Screen";
+    fullscreenIcon.classList = "fa-solid fa-expand";
   } else {
     videoContainer.requestFullscreen();
-    fullscreenBtn.innerText = "Exit Full Screen";
+    fullscreenIcon.classList = "fa-solid fa-compress";
   }
 };
 const handleMouseMove = () => {
   videoController.classList.add("showing");
-  if (mouseMoveTimeout) {
-    clearTimeout(mouseMoveTimeout);
-    mouseMoveTimeout = null;
-  }
-  mouseMoveTimeout = setTimeout(
-    () => videoController.classList.remove("showing"),
-    3000
-  );
-}; //mouseleave not necessary
+};
+const handleMouseLeave = () => {
+  videoController.classList.remove("showing");
+};
 const handleEnded = () => {
   fetch(`/api/videos/${videoid}/view`, { method: "POST" });
 };
@@ -97,4 +97,5 @@ video.addEventListener("timeupdate", handleTimeUpdate);
 video.addEventListener("ended", handleEnded);
 timeline.addEventListener("input", handleTimelineChange);
 fullscreenBtn.addEventListener("click", handleFullscreenClick);
-video.addEventListener("mousemove", handleMouseMove);
+videoContainer.addEventListener("mousemove", handleMouseMove);
+videoContainer.addEventListener("mouseleave", handleMouseLeave);
