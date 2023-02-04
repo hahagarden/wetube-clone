@@ -2,6 +2,7 @@ import MongoStore from "connect-mongo";
 import express from "express";
 import session from "express-session";
 import { localsMiddleware } from "./middlewares";
+import apiRouter from "./routers/apiRouter";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
@@ -30,6 +31,7 @@ app.use(localsMiddleware);
 app.use("/uploads", express.static("uploads"));
 app.use("/static", express.static("assets"));
 app.use("/", rootRouter);
+app.use("/api", apiRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
 
