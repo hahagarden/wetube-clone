@@ -3,6 +3,9 @@ extends base.pug
 block content 
     if errorMessage 
         span=errorMessage
+    div 
+        video(src="")#videoStream
+        button#record Start Recording
     form(method="POST" enctype="multipart/form-data")
         label(for="video") Video file 
         input(type="file" accept="video/*" id="video" name="video" required) 
@@ -10,3 +13,5 @@ block content
         input(placeholder="description" name="description" required)
         input(placeholder="hashtags" name="hashtags" required)
         input(value="Upload" type="submit")
+    block scripts 
+        script(src="/static/js/recorder.js")
