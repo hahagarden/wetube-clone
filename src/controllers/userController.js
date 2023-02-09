@@ -123,6 +123,7 @@ export const finishGithubLogin = async (req, res) => {
     if (!user) {
       const existingUsername = await User.findOne({ username: userData.login });
       user = await User.create({
+        avatarUrl: userData.avatar_url,
         name: userData.name,
         email: emailObj.email,
         username: existingUsername
@@ -157,7 +158,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
-      avatarUrl: file ? file.path : avatarUrl,
+      avatarUrl: file ? `/${file.path}` : avatarUrl,
       name,
       email,
       username,
