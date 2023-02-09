@@ -7,6 +7,7 @@ const videoSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   hashtags: [{ type: String }],
   owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   meta: {
     views: { type: Number, default: 0 },
     rating: { type: Number, default: 0 },
