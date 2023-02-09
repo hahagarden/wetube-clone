@@ -127,6 +127,9 @@ export const increaseView = async (req, res) => {
 };
 
 export const postComment = async (req, res) => {
+  if (!req.session.user) {
+    return res.sendStatus(404);
+  }
   const {
     body: { text },
     session: {
@@ -138,27 +141,47 @@ export const postComment = async (req, res) => {
   if (!video) {
     return res.sendStatus(404);
   }
+  const user = await User.findById(_id);
+  if (!user) {
+    return res.sendStatus(404);
+  }
   const comment = await Comment.create({
     text,
     owner: _id,
     video: id,
   });
   video.comments.push(comment._id);
-  video.save();
+  await video.save();
+  user.comments.push(comment._id);
+  await user.save();
   return res.status(201).json({ commentId: comment._id });
 };
 
 export const deleteComment = async (req, res) => {
   const {
     session: {
-      user: { _id },
+      user: { _id: userid },
     },
     params: { id },
   } = req;
-  const comment = Comment.findById(id).populate("owner");
-  if (_id !== comment.owner._id) {
+  const comment = await Comment.findById(id)
+    .populate("owner")
+    .populate("video");
+  const video = await Video.findById(comment.video._id);
+  const owner = await User.findById(comment.owner._id);
+  if (userid !== String(comment.owner._id)) {
     return res.sendStatus(404);
   }
   await Comment.findByIdAndDelete(id);
+  video.comments.splice(
+    video.comments.findIndex((comment) => String(comment._id) === id),
+    1
+  );
+  await video.save();
+  owner.comments.splice(
+    owner.comments.findIndex((comment) => String(comment._id) === id),
+    1
+  );
+  await owner.save();
   return res.sendStatus(200);
 };
