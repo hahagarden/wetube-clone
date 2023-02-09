@@ -34,10 +34,11 @@ block content
             button Add Comment
         ul
             each comment in video.comments
-                li.video__comment
+                li(data-commentid=comment._id).video__comment
                     i(class="fa-regular fa-comment")
                     span  #{comment.text}
-                    span  ❌
+                    if String(comment.owner._id)===String(loggedInUser._id)
+                        span#deleteComment  ❌
 block scripts
     script(src="/static/js/videoPlayer.js")
     script(src="/static/js/comment.js")
