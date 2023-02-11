@@ -21,6 +21,9 @@ block content
     div 
         p=video.description
         small=video.createdAt
+        ul 
+            each hashtag in video.hashtags
+                li=hashtag
     div
         small Uploaded by 
             a(href=`/users/${video.owner._id}`)=video.owner.username
