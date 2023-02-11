@@ -31,17 +31,18 @@ block content
         a(href=`${video._id}/edit`) Edit Video &rarr;
         br
         a(href=`${video._id}/delete`) Delete Video &rarr;
-    div#commentContainer
-        form#commentForm
+    form#commentForm
             textarea(cols="30", rows="10", placeholder="Write a nice comment.")
             button Add Comment
-        ul
-            each comment in video.comments
-                li(data-commentid=comment._id).video__comment
-                    i(class="fa-regular fa-comment")
-                    span  #{comment.text}
-                    if String(comment.owner._id)===String(loggedInUser._id)
-                        span#deleteComment  ❌
+    ul.video__comments
+        each comment in video.comments.reverse()
+            li(data-commentid=comment._id).video__comment
+                i(class="fa-regular fa-comment")
+                span.comment__text  #{comment.text}
+                span.comment__owner  #{comment.owner.username}
+                span.comment__time  #{comment.createdAt}
+                if String(comment.owner._id)===String(loggedInUser._id)
+                    span.comment__delete  ❌
 block scripts
     script(src="/static/js/videoPlayer.js")
     script(src="/static/js/comment.js")

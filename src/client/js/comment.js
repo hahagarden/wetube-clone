@@ -1,8 +1,8 @@
 const videoContainer = document.getElementById("videoContainer");
 const commentForm = document.getElementById("commentForm");
 const textarea = commentForm.querySelector("textarea");
-const deleteComment = document.getElementById("deleteComment");
-const commentsUl = document.querySelector("#commentContainer ul");
+const deleteCommentBtns = document.querySelectorAll("span.comment__delete");
+const commentsUl = document.querySelector("ul.video__comments");
 
 const renderDeleteComment = (id) => {
   const deletingLi = document.querySelector(`[data-commentid="${id}"]`);
@@ -15,7 +15,7 @@ const handleDeleteCommentClick = async (event) => {
   renderDeleteComment(commentid);
 };
 
-const renderComment = (text, id) => {
+const renderComment = (text, id, createdAt, owner) => {
   const appendingLi = document.createElement("li");
   appendingLi.classList = "video__comment";
   appendingLi.dataset.commentid = id;
@@ -25,11 +25,20 @@ const renderComment = (text, id) => {
   const commentSpan = document.createElement("span");
   commentSpan.innerText = ` ${text.trim()}`;
   appendingLi.appendChild(commentSpan);
+  const commentOwnerSpan = document.createElement("span");
+  commentOwnerSpan.innerText = ` ${owner}`;
+  commentOwnerSpan.classList = "comment__owner";
+  appendingLi.appendChild(commentOwnerSpan);
+  const commentTimeSpan = document.createElement("span");
+  const iso = new Date(createdAt);
+  commentTimeSpan.innerText = ` ${iso.toString()}`;
+  commentTimeSpan.classList = "comment__time";
+  appendingLi.appendChild(commentTimeSpan);
   const deleteSpan = document.createElement("span");
   deleteSpan.innerText = " ❌";
   deleteSpan.addEventListener("click", handleDeleteCommentClick);
   appendingLi.appendChild(deleteSpan);
-  commentsUl.appendChild(appendingLi);
+  commentsUl.prepend(appendingLi);
 };
 
 const handleCommentSubmit = async (event) => {
@@ -45,12 +54,14 @@ const handleCommentSubmit = async (event) => {
     body: JSON.stringify({ text }),
   });
   if (response.status === 201) {
-    const { commentId } = await response.json();
+    const { commentId, commentCreatedAt, commentOwner } = await response.json();
     textarea.value = "";
-    renderComment(text, commentId);
+    renderComment(text, commentId, commentCreatedAt, commentOwner);
   }
 };
 
 commentForm.addEventListener("submit", handleCommentSubmit);
-if (deleteComment)
-  deleteComment.addEventListener("click", handleDeleteCommentClick);
+if (deleteCommentBtns)
+  deleteCommentBtns.forEach((btn) =>
+    btn.addEventListener("click", handleDeleteCommentClick)
+  );
