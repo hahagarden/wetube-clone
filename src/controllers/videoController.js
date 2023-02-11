@@ -105,16 +105,26 @@ export const deleteVideo = async (req, res) => {
     user: { _id },
   } = req.session;
   const video = await Video.findById(id);
-  const user = await User.findById(_id);
   if (!video) {
     return res.status(404).render("404", { pageTitle: "Video not found." });
   }
   if (String(video.owner._id) !== String(_id)) {
     return res.status(403).redirect("/");
   }
-  await Video.findByIdAndRemove(id);
+  const videoComments = await Comment.find({ video: id });
+  for (const videoComment of videoComments) {
+    const commentOwner = await User.findById(videoComment.owner);
+    commentOwner.comments.splice(
+      commentOwner.comments.indexOf(videoComment._id),
+      1
+    );
+    await commentOwner.save();
+  }
+  await Comment.deleteMany({ video: id });
+  const user = await User.findById(_id);
   user.videos.splice(user.videos.indexOf(id), 1);
-  user.save();
+  await user.save();
+  await Video.findByIdAndRemove(id);
   return res.redirect("/");
 };
 
@@ -181,15 +191,9 @@ export const deleteComment = async (req, res) => {
     return res.sendStatus(404);
   }
   await Comment.findByIdAndDelete(id);
-  video.comments.splice(
-    video.comments.findIndex((comment) => String(comment._id) === id),
-    1
-  );
+  video.comments.splice(video.comments.indexOf(id), 1);
   await video.save();
-  owner.comments.splice(
-    owner.comments.findIndex((comment) => String(comment._id) === id),
-    1
-  );
+  owner.comments.splice(owner.comments.indexOf(id), 1);
   await owner.save();
   return res.sendStatus(200);
 };
