@@ -6,7 +6,6 @@ export const home = async (req, res) => {
   const videos = await Video.find({})
     .populate("owner")
     .sort({ createdAt: "desc" });
-  console.log(videos);
   return res.render("home", { pageTitle: "Home", videos });
 };
 
@@ -136,7 +135,6 @@ export const increaseView = async (req, res) => {
   }
   video.meta.views = video.meta.views + 1;
   await video.save();
-  console.log("done");
   return res.sendStatus(200);
 };
 

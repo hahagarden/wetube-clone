@@ -65,7 +65,6 @@ export const postLogin = async (req, res) => {
   }
   req.session.loggedIn = true;
   req.session.user = user;
-  console.log("login success! welcome.");
   return res.redirect("/");
 };
 
@@ -104,7 +103,6 @@ export const finishGithubLogin = async (req, res) => {
         headers: { Authorization: `Bearer ${access_token}` },
       })
     ).json();
-    console.log(userData);
     const emailData = await (
       await fetch("https://api.github.com/user/emails", {
         method: "GET",
@@ -136,7 +134,6 @@ export const finishGithubLogin = async (req, res) => {
     }
     req.session.loggedIn = true;
     req.session.user = user;
-    console.log("login success! welcome.");
     return res.redirect("/");
   } else {
     return res.redirect("/login");
@@ -218,7 +215,6 @@ export const see = async (req, res) => {
         model: "User",
       },
     });
-    console.log(user);
     return res.render("profile", { pageTitle: user.username, user });
   } catch (error) {
     return res.status(404).render("404", { pageTitle: "User not found." });

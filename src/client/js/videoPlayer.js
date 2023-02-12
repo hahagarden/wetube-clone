@@ -14,7 +14,6 @@ const videoContainer = document.getElementById("videoContainer");
 const videoController = document.getElementById("videoController");
 
 const { videoid } = videoContainer.dataset;
-console.log(videoContainer.dataset);
 let mouseMoveTimeout = null;
 let userVolume = 0.5;
 video.volume = userVolume;
