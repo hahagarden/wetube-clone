@@ -8,8 +8,6 @@ module.exports = {
     recorder: "./src/client/js/recorder.js",
     comment: "./src/client/js/comment.js",
   },
-  mode: "development",
-  watch: true,
   output: {
     path: path.resolve(__dirname, "assets"),
     filename: "js/[name].js",
